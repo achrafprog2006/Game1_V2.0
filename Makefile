@@ -1,8 +1,12 @@
 # Compiler and Flags
 CXX = g++
+WIN_CXX = x86_64-w64-mingw32-g++
 CXXFLAGS = -std=c++11 -Wall -g -I./include 
-# Include glad directory
+WIN_CXXFLAGS = -std=c++11 -Wall -g -I./abcd -I./include
+
+# Libraries
 LIBS = -lglfw -lGLEW -lGL -lm
+WIN_LIBS = ./GLFWwindows/libglfw3.a -lopengl32 -lgdi32 -luser32 -lwinmm
 
 # ImGui directory
 IMGUI_DIR = include/imgui
@@ -24,29 +28,47 @@ SRCS += $(SOURCES)
 
 # Object files (place .o files in bin/ with same structure as src/)
 OBJDIR = bin
-OBJS = $(patsubst src/%.cpp, $(OBJDIR)/%.o, $(SRCS))
-OBJS += $(OBJDIR)/glad.o  # Add glad.o to OBJS
+OBJS_LINUX = $(patsubst src/%.cpp, $(OBJDIR)/linux/%.o, $(SRCS))
+OBJS_WINDOWS = $(patsubst src/%.cpp, $(OBJDIR)/windows/%.o, $(SRCS))
+OBJS_LINUX += $(OBJDIR)/linux/glad.o  # Add glad.o to OBJS for Linux
+OBJS_WINDOWS += $(OBJDIR)/windows/glad.o  # Add glad.o to OBJS for Windows
 
-# Output executable name
-TARGET = build/Game1
+# Output executables
+LINUX_TARGET = build/Game1
+WIN_TARGET = build/Game1.exe
 
 # Default target
-all: $(TARGET)
+all: $(LINUX_TARGET) $(WIN_TARGET)
 
-# Link the object files to create the executable
-$(TARGET): $(OBJS)
-	$(CXX) $(OBJS) -o $(TARGET) $(LIBS)
+# Link the object files to create the Linux executable
+$(LINUX_TARGET): $(OBJS_LINUX)
+	$(CXX) $(OBJS_LINUX) -o $(LINUX_TARGET) $(LIBS)
 
-# Compile each .cpp file into a .o file in the bin/ directory, maintaining subdirectories
-$(OBJDIR)/%.o: src/%.cpp
+# Link the object files to create the Windows executable
+$(WIN_TARGET): $(OBJS_WINDOWS)
+	$(WIN_CXX) $(OBJS_WINDOWS) -o $(WIN_TARGET) $(WIN_LIBS)
+
+# Compile each .cpp file into a .o file in the bin/linux/ directory, maintaining subdirectories for Linux
+$(OBJDIR)/linux/%.o: src/%.cpp
 	@mkdir -p $(dir $@)  # Create subdirectories in bin/ if they don't exist
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Compile glad.c into an object file
-$(OBJDIR)/glad.o: src/glad.c
-	@mkdir -p $(OBJDIR)  # Ensure the bin directory exists
+# Compile each .cpp file into a .o file in the bin/windows/ directory, maintaining subdirectories for Windows
+$(OBJDIR)/windows/%.o: src/%.cpp
+	@mkdir -p $(dir $@)  # Create subdirectories in bin/ if they don't exist
+	$(WIN_CXX) $(WIN_CXXFLAGS) -c $< -o $@
+
+# Compile glad.c into an object file for Linux
+$(OBJDIR)/linux/glad.o: src/glad.c
+	@mkdir -p $(OBJDIR)/linux  # Ensure the bin/linux directory exists
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Compile glad.c into an object file for Windows
+$(OBJDIR)/windows/glad.o: src/glad.c
+	@mkdir -p $(OBJDIR)/windows  # Ensure the bin/windows directory exists
+	$(WIN_CXX) $(WIN_CXXFLAGS) -c $< -o $@
+	
 # Clean up build files
+.PHONY: clean
 clean:
-	rm -rf $(OBJS) $(TARGET)
+	rm -rf $(OBJDIR)/*.o $(LINUX_TARGET) $(WIN_TARGET)

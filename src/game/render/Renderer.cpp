@@ -4,14 +4,14 @@
 
 Renderer::Renderer(){
 	VertexShader 
-		 entityVertex =  VertexShader("/home/achraf0x/cpp_apps_gl/Game1/src/game/shaders/vertex.glsl"),
-		 terrainVertex = VertexShader("/home/achraf0x/cpp_apps_gl/Game1/src/game/shaders/terrainvertex.glsl"),
-		 skyboxVertex =  VertexShader("/home/achraf0x/cpp_apps_gl/Game1/src/game/shaders/skyboxvertex.glsl");
+		 entityVertex =  VertexShader("./src/game/shaders/vertex.glsl"),
+		 terrainVertex = VertexShader("./src/game/shaders/terrainvertex.glsl"),
+		 skyboxVertex =  VertexShader("./src/game/shaders/skyboxvertex.glsl");
 	FragmentShader
-		 entityFragment = FragmentShader("/home/achraf0x/cpp_apps_gl/Game1/src/game/shaders/fragment.glsl"),
-		 terrainFragment = FragmentShader("/home/achraf0x/cpp_apps_gl/Game1/src/game/shaders/terrainfragment.glsl"),
-		 skyboxFragment =  FragmentShader("/home/achraf0x/cpp_apps_gl/Game1/src/game/shaders/skyboxfragment.glsl"),
-		 outlineFragment =  FragmentShader("/home/achraf0x/cpp_apps_gl/Game1/src/game/shaders/outlinefragment.glsl");
+		 entityFragment = FragmentShader("./src/game/shaders/fragment.glsl"),
+		 terrainFragment = FragmentShader("./src/game/shaders/terrainfragment.glsl"),
+		 skyboxFragment =  FragmentShader("./src/game/shaders/skyboxfragment.glsl"),
+		 outlineFragment =  FragmentShader("./src/game/shaders/outlinefragment.glsl");
 	Shader
 		* entityShader = new Shader(&entityVertex, &entityFragment),
 		* terrainShader = new Shader(&terrainVertex, &terrainFragment),
